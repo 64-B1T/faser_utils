@@ -9,10 +9,7 @@ def disp(matrix, title = "MATRIX", mode = 0, noprint = False):
     else:
         matstr = disptex(matrix, title)[:-1]
     if not noprint:
-        if title != "MATRIX":
-            print(title + ": " + matstr)
-        else:
-            print(matstr)
+        print(matstr)
     return matstr
 
 def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
@@ -70,7 +67,7 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
     except:
         #If all else fails, print Normally
         if title != "MATRIX":
-            strr += (title + "\n")
+            strr += (title + ": ")
         strr += (str(matrix) + "\n")
         return strr
     #Formats correct number of top and bottom markers for t_bar
