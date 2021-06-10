@@ -12,7 +12,7 @@ def disp(matrix, title = "MATRIX", mode = 0, noprint = False):
         print(matstr)
     return matstr
 
-def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
+def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h="", new = True):
     t_bar = ""
     t_tl = "╔"
     t_bl = "╚"
@@ -64,6 +64,8 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
             t_key = shape[dims - 1]
         else:
             t_key = max(shape)
+            if new:
+                strr+= title + ": "
     except:
         #If all else fails, print Normally
         if title != "MATRIX":
@@ -112,11 +114,11 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
             strr+=(t_tl + t_bar + " " + title + " BEGIN " + t_bar + "╗\n")
         for i in range(shape[0]):
             if i == 0:
-                strr += dispa(matrix[i,], nd = nd, h = "╔ ")
+                strr += dispa(matrix[i,], nd = nd, h = "╔ ", new = False)
             elif i == shape[0] - 1:
-                strr += dispa(matrix[i,], nd = nd, h = "╚ ")
+                strr += dispa(matrix[i,], nd = nd, h = "╚ ", new = False)
             else:
-                strr += dispa(matrix[i,], nd = nd)
+                strr += dispa(matrix[i,], nd = nd, new = False)
         if title != "MATRIX":
             strr+=(t_bl + t_bar + "═ " + title + " END ═" + t_bar + "╝\n")
 
@@ -126,14 +128,14 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
         for i in range(shape[0]):
             if pdims:
                 strr += ("DIM " + str(i) + ":\n")
-            strr += dispa(matrix[i,], nd = nd)
+            strr += dispa(matrix[i,], nd = nd, new = False)
         strr += (t_bl + t_bar + "═ " + title + " END ═" + t_bar + "╝\n")
 
     #Prints 4D Matrix by calling 3D recursively
     elif dims == 4:
         strr += (t_tl + t_bar + "══ " + title + " BEGIN ══" + t_bar + "╗\n")
         for i in range(shape[0]):
-            strr += dispa(matrix[i,], nd = nd, title = title + " d:" + str(i), pdims = pdims)
+            strr += dispa(matrix[i,], nd = nd, title = title + " d:" + str(i), pdims = pdims, new = False)
         strr += (t_bl + t_bar + "═══ " + title + " END ═══" + t_bar + "╝\n")
     else:
         taux = "═"
@@ -141,7 +143,7 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h=""):
             taux = taux + taux
         strr += (t_tl + t_bar + taux +" " + title + " BEGIN " + taux + t_bar + "╗\n")
         for i in range(shape[0]):
-            strr += dispa(matrix[i,], title = title + " s" + str(i))
+            strr += dispa(matrix[i,], title = title + " s" + str(i), new = False)
         strr += (t_bl + t_bar + taux + "═ " + title + " END ═" + taux + t_bar + "╝\n")
     return strr
     #More dimensions can be added as needed if neccessary
