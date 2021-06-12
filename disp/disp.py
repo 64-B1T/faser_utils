@@ -1,18 +1,40 @@
-def disp(matrix, title = "MATRIX", mode = 0, noprint = False):
+import time
+import datetime
+def disp(matrix, title = "MATRIX", nd = 3, mode = 0, pdims = True, noprint = False):
     """
     Drop in replacement for python print. Operates like Matlab's disp() function.
     Takes in an object to print, a title, and an optional mode
+    Args:
+        matrix: the item to be printed (does not have to be a matrix)
+        title: An optional title or caption to be applied to the printed item
+        nd: number of decimal places
+        mode: whether or not to print the context in latex table format
+        pdims: print dimensions
+        noprint: simply return a string without printing anything
+    Returns:
+        String
     """
     matstr = ""
     if mode == 0:
-        matstr = dispa(matrix, title)[:-1]
+        matstr = dispa(matrix, title, nd, pdims)[:-1]
     else:
-        matstr = disptex(matrix, title)[:-1]
+        matstr = disptex(matrix, title, nd)[:-1]
     if not noprint:
         print(matstr)
     return matstr
 
 def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h="", new = True):
+    """
+    Helper function fod disp, used recursively
+    Args:
+        matrix: item to be printed
+        nd: number of decimal places
+        pdims: print dimensions
+        h: existing string
+        new: if this is a new call
+    Returns:
+        String
+    """
     t_bar = ""
     t_tl = "╔"
     t_bl = "╚"
@@ -149,6 +171,17 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h="", new = True):
     #More dimensions can be added as needed if neccessary
 
 def disptex(matrix, title,  nd = 3, pdims = True, h=""):
+    """
+    Prints a matrix in latex format.
+    Args:
+        matrix: matrix to be printed
+        title: caption
+        nd: number of decimal places to round to
+        pdims: print dimensions
+        h: existing string
+    Returns:
+        String
+    """
     try:
         shape = matrix.shape
     except:
@@ -177,6 +210,15 @@ def disptex(matrix, title,  nd = 3, pdims = True, h=""):
 
 
 def printTFlist(matrix, title, nd):
+    """
+    Prints a list of TM objects (TF was deprecated)
+    Args:
+        matrix: list of tms to be printed
+        title: caption
+        nd: number of decimal places to round to
+    Returns:
+        String
+    """
     strr =  "╔"
     nTF = len(matrix)
     tLen = (2 * nTF * (nd+1) + (2*nTF+1))
@@ -226,198 +268,28 @@ def printTFlist(matrix, title, nd):
     strr += "╝\n"
     return strr
 
-
-def disp2(matrix, nd = 3, title = "MATRIX", pdims = True, h=""):
-    lines = d_help(matrix, nd, title, pdims, h)
-    for str in lines:
-        print(str)
-
-def progressBar(iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '#'):
+def progressBar(iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '#', ETA=None):
+    """
+    Prints a progress bar, can use ETA.
+    Adapted from here: https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    Params:
+        iteration: current iteration
+        total: goal number of iterations
+        prefix: Optional- Text to append to the beginning
+        suffix: Optional - Text to append to the end (overwritten by ETA)
+        decimals: Optional - Decimals to round to
+        length: Optional - Length of progress bar in characters
+        fill: Optional - Fill Character
+        ETA: Optional - Time in seconds since start, triggers printing ETA in suffix
+    """
+    if ETA is not None:
+        current = time.time()
+        est_complete = (current-ETA)/(iteration+1)*(total-iteration)+current
+        est_complete_str = datetime.datetime.fromtimestamp(est_complete).strftime('ETA: %Y-%m-%d %I:%M:%S%p')
+        suffix = est_complete_str
     percent = ("{0:." + str(decimals) + "f}").format(100*(iteration / float(total)))
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
     print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
     if iteration == total:
         print("")
-
-
-def d_help(matrix, nd = 3, title = "MATRIX", pdims = True, h=""):
-    t_bar = ""
-    t_tl = "╔"
-    t_bl = "╚"
-    #╚╔╝╗║═ Symbols Required
-
-    lines = []
-    #Accounts for Even or Odd amounts of letters in a title
-    if (len(title) % 2 == 0):
-        t_tl = t_tl + "═"
-        t_bl = t_bl + "═"
-
-    #Accounts for a List of Objects, Calls itself Recursively
-    if isinstance(matrix, list):
-        i = 0
-        lines.append(t_tl + "════════════" + " " + title + " BEGIN " + "════════════" + "╗")
-        for mat in matrix:
-            if ~isinstance(mat, list) and ~isinstance(mat, tuple):
-                print(mat)
-            else:
-                if pdims:
-                    print("Dim " + str(i) + ":")
-                t_list = (d_help(mat))
-                for strn in t_list:
-                    lines.append(strn)
-            i = i + 1
-        lines.append(t_bl + t_bar + "════════════" + title + " END ═" + "════════════" + "╝")
-        return;
-
-    shape = 0
-
-    #Variety of try catch to prevent crashes due to liberal use of disp()
-    try:
-        try:
-            shape = matrix.shape
-        except:
-            #Panda obects IIRC use shape as a method
-            shape = matrix.shape()
-
-        dims = len(shape)
-        if dims >= 2:
-            t_key = shape[dims - 1]
-        else:
-            t_key = max(shape)
-    except:
-        #If all else fails, print Normally
-        lines.append(str(matrix))
-        return
-    #Formats correct number of top and bottom markers for t_bar
-    while(len(title) + 8 + (len(t_bar) * 2)) < (t_key * (nd + 7) ):
-        t_bar = t_bar + "═"
-
-    #Prints a single Dimension Vector
-    if dims == 1:
-        cn = 0
-        if h == "╔ ":
-            cn = 1
-        elif h == "╚ ":
-            cn = 2
-        else:
-            h = h + "║ "
-        for i in range(shape[0]):
-            t_nd = nd
-            if (abs(matrix[i]) >= 9999):
-                nm = len(str(abs(round(matrix[i]))))
-                while t_nd > 0 and nm > 6:
-                    t_nd = t_nd - 1
-                    nm = nm - 1
-            fmat = "{:" + str(nd + 6) +"." + str(t_nd) + "f}"
-
-
-            h = h + fmat.format(matrix[i])
-            if i != shape[0] - 1:
-                h = h + ","
-
-        if cn == 0:
-            h = h + " ║"
-        elif cn == 1:
-            h = h + " ╗"
-        else:
-            h = h + " ╝"
-
-        lines.append(h)
-
-    #Prints traditional Square Matrix, allows for title
-    elif dims == 2:
-        if title != "MATRIX":
-            lines.append(t_tl + t_bar + " " + title + " BEGIN " + t_bar + "╗")
-        for i in range(shape[0]):
-            if i == 0:
-                t_list = d_help(matrix[i,], nd = nd, h = "╔ ")
-                for strn in t_list:
-                    lines.append(strn)
-            elif i == shape[0] - 1:
-                t_list = d_help(matrix[i,], nd = nd, h = "╚ ")
-                for strn in t_list:
-                    lines.append(strn)
-            else:
-                t_list = d_help(matrix[i,], nd = nd)
-                for strn in t_list:
-                    lines.append(strn)
-        if title != "MATRIX":
-            lines.append(t_bl + t_bar + "═ " + title + " END ═" + t_bar + "╝")
-
-    #Prints 3D Matrix by calling 2D recursively
-    elif dims == 3:
-        lines.append(t_tl + t_bar + " " + title + " BEGIN " + t_bar + "╗")
-        for i in range(shape[0]):
-            if pdims:
-                lines.append("DIM " + str(i) + ":")
-            t_list = d_help(matrix[i,], nd = nd)
-            for strn in t_list:
-                lines.append(strn)
-        lines.append(t_bl + t_bar + "═ " + title + " END ═" + t_bar + "╝")
-
-    #Prints 4D Matrix by calling 3D recursively
-    elif dims == 4:
-        lines.append(t_tl + t_bar + "══ " + title + " BEGIN ══" + t_bar + "╗")
-        for i in range(shape[0]):
-            t_list = d_help(matrix[i,], nd = nd, title = title + " d:" + str(i), pdims = pdims)
-            for strn in t_list:
-                lines.append(strn)
-        lines.append(t_bl + t_bar + "═══ " + title + " END ═══" + t_bar + "╝")
-    else:
-        taux = "═"
-        for i in range (dims - 3):
-            taux = taux + taux
-        lines.append(t_tl + t_bar + taux +" " + title + " BEGIN " + taux + t_bar + "╗")
-        for i in range(shape[0]):
-            t_list = d_help(matrix[i,], title = title + " s" + str(i))
-            for strn in t_list:
-                lines.append(strn)
-        lines.append(t_bl + t_bar + taux + "═ " + title + " END ═" + taux + t_bar + "╝")
-    return lines
-
-    #More dimensions can be added as needed if neccessary
-
-
-def mult(mat1, mat2):
-    mat3 = mat1 @ mat2
-    lines1 = d_help(mat1)
-    lines2 = d_help(mat2)
-    lines3 = d_help(mat3)
-
-    nh = max(len(lines1), len(lines2), len(lines3)) / 2
-
-    dim1 = len(lines1[0])
-    dim2 = len(lines2[0])
-    dim3 = len(lines3[0])
-
-    lines4 = []
-    i = 0
-    while (i < len(lines1) or i < len(lines2) or i < len(lines3)):
-        lines4.append("")
-        if i < len(lines1):
-            lines4[i] = lines4[i] + lines1[i]
-        else:
-            for j in range(dim1):
-                lines4[i] = lines4[i] + " "
-        if i == nh:
-            lines4[i] = lines4[i] + " * "
-        else:
-            lines4[i] = lines4[i] + "   "
-        if i < len(lines2):
-            lines4[i] = lines4[i] + lines2[i]
-        else:
-            for j in range(dim2):
-                lines4[i] = lines4[i] + " "
-        if i == nh:
-            lines4[i] = lines4[i] + " = "
-        else:
-            lines4[i] = lines4[i] + "   "
-        if i < len(lines3):
-            lines4[i] = lines4[i] + lines3[i]
-        else:
-            for j in range(dim3):
-                lines4[i] = lines4[i] + " "
-        i = i + 1
-    for line in lines4:
-        print(line)
