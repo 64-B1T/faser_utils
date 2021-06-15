@@ -25,7 +25,7 @@ def disp(matrix, title = "MATRIX", nd = 3, mode = 0, pdims = True, noprint = Fal
 
 def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h="", new = True):
     """
-    Helper function fod disp, used recursively
+    Helper function for disp, used recursively
     Args:
         matrix: item to be printed
         nd: number of decimal places
@@ -86,7 +86,7 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h="", new = True):
             t_key = shape[dims - 1]
         else:
             t_key = max(shape)
-            if new:
+            if new and title != "MATRIX":
                 strr+= title + ": "
     except:
         #If all else fails, print Normally
