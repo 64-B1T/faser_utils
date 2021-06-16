@@ -160,9 +160,7 @@ def dispa(matrix, title = "MATRIX", nd = 3, pdims = True, h="", new = True):
             strr += dispa(matrix[i,], nd = nd, title = title + " d:" + str(i), pdims = pdims, new = False)
         strr += (t_bl + t_bar + "═══ " + title + " END ═══" + t_bar + "╝\n")
     else:
-        taux = "═"
-        for i in range (dims - 3):
-            taux = taux + taux
+        taux = "═" * (dims - 3)**2
         strr += (t_tl + t_bar + taux +" " + title + " BEGIN " + taux + t_bar + "╗\n")
         for i in range(shape[0]):
             strr += dispa(matrix[i,], title = title + " s" + str(i), new = False)
