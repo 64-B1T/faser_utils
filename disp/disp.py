@@ -195,7 +195,7 @@ def disptex(matrix, title,  nd = 3, pdims = True, h=""):
     for i in range(shape[0]):
         #strr+= "\\hline\n"
         for j in range(shape[1]):
-            strr+= str(round(matrix[i,j], nd))
+            strr+= str(round(matrix[i, j], nd))
             if j != shape[1] - 1:
                 strr+=" & "
                 continue
