@@ -41,6 +41,7 @@ class JSONLog:
             self.saveLog()
 
     def saveLog(self):
+        self.log['num_items'] = self.enum
         with open (self.logfname, 'w') as outfile:
             json.dump(self.log, outfile)
 
